@@ -42,12 +42,15 @@ pub mod ft_NFT {
     #[constructor]
     fn constructor(
         ref self: ContractState,
+        name: ByteArray,
+        symbol: ByteArray,
+        base_uri: ByteArray,
+        max_supply: u256
     ) {
-        let name: ByteArray = "ft_NFT";
-        let symbol: ByteArray = "FTFT";
-        let base_uri: ByteArray = "https://ipfs.io/ipfs/QmV8LY3u8jMDC71DnEbMSB7hjc2K5BLrYfofwRwt6pcutD/";
-//        let base_uri: ByteArray = "https://ipfs.io/ipns/k51qzi5uqu5di1cpa94xzv8cg3vxj8mty6yzf5923v87bddflxfxhvj2v576gw";
-        self.max_supply.write(42);
+//        let name: ByteArray = "ft_NFT";
+//        let symbol: ByteArray = "FTFT";
+//        let base_uri: ByteArray = "https://ipfs.io/ipfs/QmV8LY3u8jMDC71DnEbMSB7hjc2K5BLrYfofwRwt6pcutD/";
+        self.max_supply.write(max_supply);
         self.minted_count.write(0_u256);
         self.erc721.initializer(name, symbol, base_uri);
     }

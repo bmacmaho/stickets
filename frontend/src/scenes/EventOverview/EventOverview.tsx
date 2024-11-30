@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { X } from 'lucide-react'
 import NavBar from '@/components/NavBar'
+import { useAccount, useBalance, useContract } from "@starknet-react/core";
+
+const CONTRACT_ADDRESS = import.meta.env.VITE_PURCHASE_TICKET_CONTRACT_ADDRESS
 
 const concert = {
     id: 1,
@@ -29,12 +32,22 @@ interface EventOverviewProps {
 
 const EventOverview :FC<EventOverviewProps> = ({setBuyTicketsIsOpen}) => {
     const [quantity, setQuantity] = useState(1)
+    const { address, status } = useAccount();
+    const { contract } = useContract({address: CONTRACT_ADDRESS});
+    const { data, error} = useBalance({ address })
+
+    const readableBalance = (bData: {value: bigint, decimals: number, symbol: string, formatted: string} | undefined) => {
+        if (!bData) return undefined;
+        const { value, decimals, symbol } = bData;
+        const balance = Number(value) / Math.pow(10, decimals);
+        return `${balance.toFixed(6)} ${symbol}` ;
+    }
 
     const handlePurchase = () => {
-        // Here you would typically interact with the smart contract to purchase the ticket
-        console.log(`Purchasing ${quantity} ticket(s) for concert ${concert.id}`)
-        // After purchase, you might want to update the available tickets
-    }
+        console.log("Current Balance", readableBalance(data))
+        console.log("balance error", error)
+        console.log("Address", address)
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
@@ -111,6 +124,7 @@ const EventOverview :FC<EventOverviewProps> = ({setBuyTicketsIsOpen}) => {
                                         onChange={(e) => setQuantity(parseInt(e.target.value))}
                                         className="mt-1"
                                     />
+                                    <p className="mt-2">Current Balance {readableBalance(data)}</p>
                                     <p className="mt-2">Total Price: {(quantity * concert.price).toFixed(2)} ETH</p>
                                     <Button className="w-full mt-4" onClick={handlePurchase}>
                                         Confirm Purchase

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { FC, useState } from "react";
 import {
   useSendTransaction,
   useContract,
   useNetwork,
   useAccount,
-  useConnectors,
+  useInjectedConnectors,
   useBalance,
 } from "@starknet-react/core";
 import type { Abi } from "starknet";
@@ -37,9 +37,9 @@ const CONTRACT_ADDRESS = "0x123...";
 
 const isValidAddress = (addr: string): boolean => /^(0x)?[0-9a-f]{64}$/i.test(addr);
 
-export function StarknetPayment() {
+const StarknetPayment: FC = () => {
 	const { address } = useAccount();
-	const { available, connect, disconnect } = useConnectors();
+	const { available, connect, disconnect } = useInjectedConnectors();
 	const { data: balance, error: balanceError, isLoading: isBalanceLoading } = useBalance({
 	  address,
 	});
@@ -162,3 +162,5 @@ export function StarknetPayment() {
     </Card>
   );
 }
+
+export default StarknetPayment

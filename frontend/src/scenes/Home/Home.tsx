@@ -10,7 +10,6 @@ import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import NavBar from '@/components/NavBar'
-import { cn } from '@/lib/utils'
 
 const upcomingConcerts = [
   { id: 1, name: "Rock Festival 2024", date: "2024-07-15", image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cm9jayUyMGNvbmNlcnR8ZW58MHx8MHx8fDA%3D" },

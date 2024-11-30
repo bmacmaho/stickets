@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "./Button2";
+import { Button } from "./button"
 
 export default function Dialog({
   children,
@@ -9,7 +9,7 @@ export default function Dialog({
 
   return (
     <div>
-      <Button onClick={() => setIsOpen(true)}>{title}</Button>
+      <Button variant="secondary" onClick={() => setIsOpen(true)}>{title}</Button>
       {isOpen && (
         <div className="fixed z-50 inset-0 flex items-center justify-center bg-black/30">
           <div className="p-8 bg-white rounded-md flex flex-col gap-12">

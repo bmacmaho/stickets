@@ -25,27 +25,21 @@ import jsonData from "../../abi.json";
 import { Abi } from "starknet";
 
 const CONTRACT_ADDRESS =
-  "0x015fa52c0b05bad456cf7c56c51f18db5b6c7976d716de9cd8dd6c344bd43d2e";
+  "0x050c8bd1fbbfb52c76a5df9bcd748bcc6dfef7239234c2819e23195760cbfbf7";
 const ABI: Abi = jsonData;
 
 const concert = {
   id: 1,
-  name: "Rock Festival 2023",
+  name: "Starknet Hackaton",
   description:
-    "A weekend of non-stop rock music featuring the biggest names in the industry. Get ready for an unforgettable experience with mind-blowing performances, incredible sound, and an electrifying atmosphere. This is the must-attend event of the year for all rock enthusiasts!",
-  tickets: 1000,
+    "A weekend with a bunch of nerds gathered together to hack instead of spending quality time with their families, overdosing on caffeine, and overeating just to make it all worthwhile. Expect sleep deprivation, code collisions, and the kind of teamwork that only exists when there's a deadline and a 10-minute snack break. It's chaos, it's code, it's a whole vibe—don’t miss it!",
+  tickets: 42,
   available: 50,
-  price: 0.1,
-  date: new Date(2023, 7, 15),
-  genre: "Rock",
-  venue: "Central Park, New York City",
-  lineup: [
-    "The Rolling Stones",
-    "Foo Fighters",
-    "Muse",
-    "The Killers",
-    "Arctic Monkeys",
-  ],
+  price: "free",
+  date: new Date(2022, 10, 29),
+  genre: "Nerd",
+  venue: "42Berlin",
+  lineup: ["Lana", "Michael", "Timothée", "Chqrles", "Robert"],
 };
 
 interface EventOverviewProps {
@@ -112,7 +106,7 @@ const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
             </Button>
           </div>
           <img
-            src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cm9jayUyMGNvbmNlcnR8ZW58MHx8MHx8fDA%3D"
+            src="https://ipfs.io/ipfs/QmfFLkQEqbYNSqn7wQN9Kd2XJuJJe4ZHEhaG6jADQDRjfr/starknet42berlin.png"
             width={800}
             height={400}
             className="w-full h-64 object-cover"
@@ -141,7 +135,7 @@ const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
               </div>
               <div>
                 <p className="font-semibold">Price per Ticket:</p>
-                <p>{concert.price} ETH</p>
+                <p>{concert.price}</p>
               </div>
             </div>
             <div className="mb-6">

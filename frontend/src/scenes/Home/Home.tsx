@@ -10,6 +10,7 @@ import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import NavBar from '@/components/NavBar'
+import { cn } from '@/lib/utils'
 
 const upcomingConcerts = [
   { id: 1, name: "Rock Festival 2024", date: "2024-07-15", image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cm9jayUyMGNvbmNlcnR8ZW58MHx8MHx8fDA%3D" },
@@ -31,7 +32,7 @@ const userConcerts = [
   { id: 3, name: "Rock Legends", date: "2024-10-01", image: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHJvY2slMjBjb25jZXJ0fGVufDB8fDB8fHww" },
 ]
 
-function Section({ title, data }: { title: string; data: any[] }) {
+function Section({ title, data, setBuyTicketsIsOpen}: { title: string; data: any[], setBuyTicketsIsOpen: any}) {
   return (
     <div>
       <h2 className="text-2xl font-semibold text-white mb-4">{title}</h2>
@@ -41,17 +42,19 @@ function Section({ title, data }: { title: string; data: any[] }) {
             {data && data.length > 0 ? (
               data.map((item) => (
                 <Card key={item.id} className="flex-shrink-0 w-64 bg-white/90 backdrop-blur-sm">
-                  <CardContent className="p-4">
-                    <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-full h-32 object-cover mb-4 rounded"
-                        loading="lazy"
-                    />
-                    <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
-                    {item.date && <p className="text-sm text-gray-600">{item.date}</p>}
-                    {item.capacity && <p className="text-sm text-gray-600">Capacity: {item.capacity}</p>}
-                  </CardContent>
+                    <button onClick={() => setBuyTicketsIsOpen(true)} className={"w-full text-left transition-colors hover:bg-accent"}>
+                        <CardContent className="p-4">
+                            <img 
+                                src={item.image} 
+                                alt={item.name} 
+                                className="w-full h-32 object-cover mb-4 rounded"
+                                loading="lazy"
+                                />
+                            <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
+                            {item.date && <p className="text-sm text-gray-600">{item.date}</p>}
+                            {item.capacity && <p className="text-sm text-gray-600">Capacity: {item.capacity}</p>}
+                        </CardContent>
+                    </button>
                 </Card>
               ))
             ) : (
@@ -64,7 +67,11 @@ function Section({ title, data }: { title: string; data: any[] }) {
   )
 }
 
-const Home :FC = () => {
+interface HomeProps {
+    setBuyTicketsIsOpen: any
+}
+
+const Home : FC<HomeProps> = ({setBuyTicketsIsOpen}) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedGenre, setSelectedGenre] = useState('all')
   const [selectedDate, setSelectedDate] = useState(null)
@@ -119,9 +126,9 @@ const Home :FC = () => {
           </div>
           
           <div className="space-y-12">
-            <Section title="Upcoming Concerts in Berlin" data={upcomingConcerts} />
-            <Section title="Your Upcoming Concerts" data={userConcerts} />
-            <Section title="Venues" data={venues} />
+            <Section title="Upcoming Concerts in Berlin" data={upcomingConcerts} setBuyTicketsIsOpen={setBuyTicketsIsOpen}/>
+            <Section title="Your Upcoming Concerts" data={userConcerts} setBuyTicketsIsOpen={setBuyTicketsIsOpen} />
+            <Section title="Venues" data={venues} setBuyTicketsIsOpen={setBuyTicketsIsOpen}/>
           </div>
         </div>
       </main>

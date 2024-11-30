@@ -2,7 +2,7 @@
 import { type Connector, useConnect } from "@starknet-react/core";
 import React from "react";
 import { Button } from "../ui/Button2";
-import Dialog from "../ui/Dialog";
+import Dialog from "../ui/Dialog2";
 
 export default function ConnectModal() {
   const { connect, connectors } = useConnect();

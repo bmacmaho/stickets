@@ -45,7 +45,7 @@ pub mod ft_NFT {
     ) {
         let name: ByteArray = "ft_NFT";
         let symbol: ByteArray = "FTFT";
-        let base_uri: ByteArray = "https://ipfs.io/ipfs/QmWL7kyn7sV3JdQkiobQw6CfuRaxeZ6Hvvca6Z2Ym7CM3t/";
+        let base_uri: ByteArray = "https://ipfs.io/ipfs/QmV8LY3u8jMDC71DnEbMSB7hjc2K5BLrYfofwRwt6pcutD/";
 //        let base_uri: ByteArray = "https://ipfs.io/ipns/k51qzi5uqu5di1cpa94xzv8cg3vxj8mty6yzf5923v87bddflxfxhvj2v576gw";
         self.max_supply.write(42);
         self.minted_count.write(0_u256);

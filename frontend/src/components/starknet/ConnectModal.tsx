@@ -1,7 +1,7 @@
 "use client";
 import { type Connector, useConnect } from "@starknet-react/core";
 import React from "react";
-import { Button } from "../ui/Button";
+import { Button } from "../ui/Button2";
 import Dialog from "../ui/Dialog";
 
 export default function ConnectModal() {

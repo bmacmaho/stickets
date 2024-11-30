@@ -1,4 +1,4 @@
-import { mainnet } from "@starknet-react/chains";
+import { sepolia } from "@starknet-react/chains";
 import {
   StarknetConfig,
   argent,
@@ -12,7 +12,7 @@ import App from "./App";
 import "./global.css";
 
 export default function Root({ children }: { children: React.ReactNode }) {
-  const chains = [mainnet];
+  const chains = [sepolia];
   const provider = publicProvider();
   const { connectors } = useInjectedConnectors({
     // Show these connectors if the user has no connector installed.

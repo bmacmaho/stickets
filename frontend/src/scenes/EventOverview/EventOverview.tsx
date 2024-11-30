@@ -13,8 +13,8 @@ import { useAccount, useBalance, useContract } from "@starknet-react/core";
 import jsonData from "../../abi.json"
 import { Abi } from 'starknet'
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_PURCHASE_TICKET_CONTRACT_ADDRESS
-const ABI: Abi = jsonData.abi
+// const CONTRACT_ADDRESS = "0x015fa52c0b05bad456cf7c56c51f18db5b6c7976d716de9cd8dd6c344bd43d2e";
+// const ABI: Abi = jsonData;
 
 const concert = {
     id: 1,

@@ -10,8 +10,11 @@ import { Label } from '@/components/ui/label'
 import { X } from 'lucide-react'
 import NavBar from '@/components/NavBar'
 import { useAccount, useBalance, useContract } from "@starknet-react/core";
+import jsonData from "../../abi.json"
+import { Abi } from 'starknet'
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_PURCHASE_TICKET_CONTRACT_ADDRESS
+const ABI: Abi = jsonData.abi
 
 const concert = {
     id: 1,
@@ -33,7 +36,7 @@ interface EventOverviewProps {
 const EventOverview :FC<EventOverviewProps> = ({setBuyTicketsIsOpen}) => {
     const [quantity, setQuantity] = useState(1)
     const { address, status } = useAccount();
-    const { contract } = useContract({address: CONTRACT_ADDRESS});
+    const { contract } = useContract({ abi: ABI, address: CONTRACT_ADDRESS});
     const { data, error} = useBalance({ address })
 
     const readableBalance = (bData: {value: bigint, decimals: number, symbol: string, formatted: string} | undefined) => {
@@ -44,9 +47,7 @@ const EventOverview :FC<EventOverviewProps> = ({setBuyTicketsIsOpen}) => {
     }
 
     const handlePurchase = () => {
-        console.log("Current Balance", readableBalance(data))
-        console.log("balance error", error)
-        console.log("Address", address)
+        contract.ft_mint(address);
     };
 
     return (

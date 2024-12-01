@@ -4,6 +4,7 @@ import { FC, useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useReadContract } from "@starknet-react/core";
 
 import {
   Dialog,
@@ -28,6 +29,19 @@ import { Abi } from "starknet";
 const CONTRACT_ADDRESS =
   "0x07a956ec198ed2851021ba9be241939c055ff98b2eabddf055e5554d2701a933";
 const ABI: Abi = jsonData;
+function YourComponent() {
+  const { data, isLoading, isError } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: ABI,
+    functionName: "get_available",
+    args: [],
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching data</div>;
+
+  return <div>Available: {data?.toString()}</div>;
+}
 
 const concert = {
   id: 1,
@@ -35,8 +49,8 @@ const concert = {
   description:
     "A weekend with a bunch of nerds gathered together to hack instead of spending quality time with their families, overdosing on caffeine, and overeating just to make it all worthwhile. Expect sleep deprivation, code collisions, and the kind of teamwork that only exists when there's a deadline and a 10-minute snack break. It's chaos, it's code, it's a whole vibe—don't miss it!",
   tickets: 42,
-  available: 42,
-  price: "free",
+  //   available: 42,
+  price: "Free",
   date: new Date(2022, 10, 29),
   genre: "Nerd",
   venue: "42Berlin",
@@ -184,7 +198,8 @@ const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
                 { label: "Date", value: format(concert.date, "MMMM d, yyyy") },
                 { label: "Venue", value: concert.venue },
                 { label: "Genre", value: concert.genre },
-                { label: "Available", value: concert.available },
+                { label: "Available", value: YourComponent() },
+
                 { label: "Price", value: concert.price },
               ].map((item) => (
                 <div

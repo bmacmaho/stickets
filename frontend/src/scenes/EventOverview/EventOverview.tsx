@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import { X } from "lucide-react";
 import NavBar from "@/components/NavBar";
 
@@ -26,7 +26,7 @@ import confetti from "canvas-confetti";
 import { Abi } from "starknet";
 
 const CONTRACT_ADDRESS =
-  "0x050c8bd1fbbfb52c76a5df9bcd748bcc6dfef7239234c2819e23195760cbfbf7";
+  "0x07a956ec198ed2851021ba9be241939c055ff98b2eabddf055e5554d2701a933";
 const ABI: Abi = jsonData;
 
 const concert = {
@@ -74,7 +74,6 @@ interface EventOverviewProps {
 }
 
 const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
-  const [quantity, setQuantity] = useState(1);
   const [txHash, setTxHash] = useState<string | null>(null);
   const { address } = useAccount();
   const { contract } = useContract({ abi: ABI, address: CONTRACT_ADDRESS });

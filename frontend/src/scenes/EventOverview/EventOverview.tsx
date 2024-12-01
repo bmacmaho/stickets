@@ -40,7 +40,7 @@ function YourComponent() {
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching data</div>;
 
-  return <div>Available: {data?.toString()}</div>;
+  return <div>{data?.toString()}</div>;
 }
 
 const concert = {

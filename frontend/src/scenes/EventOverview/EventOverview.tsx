@@ -40,7 +40,7 @@ function YourComponent() {
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching data</div>;
 
-  return <div>Available: {data?.toString()}</div>;
+  return <div>{data?.toString()}</div>;
 }
 
 const concert = {
@@ -51,7 +51,7 @@ const concert = {
   tickets: 42,
   //   available: 42,
   price: "Free",
-  date: new Date(2022, 10, 29),
+  date: new Date(2024, 10, 29),
   genre: "Nerd",
   venue: "42Berlin",
   lineup: ["Lana", "Michael", "Timothée", "Chqrles", "Robert"],

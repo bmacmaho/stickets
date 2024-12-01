@@ -4,6 +4,7 @@ import { FC, useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
   Dialog,
   DialogContent,
@@ -11,10 +12,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import NavBar from "@/components/NavBar";
+
 import {
   useAccount,
   useBalance,
@@ -33,9 +33,9 @@ const concert = {
   id: 1,
   name: "Starknet Hackaton",
   description:
-    "A weekend with a bunch of nerds gathered together to hack instead of spending quality time with their families, overdosing on caffeine, and overeating just to make it all worthwhile. Expect sleep deprivation, code collisions, and the kind of teamwork that only exists when there's a deadline and a 10-minute snack break. It's chaos, it's code, it's a whole vibe—don’t miss it!",
+    "A weekend with a bunch of nerds gathered together to hack instead of spending quality time with their families, overdosing on caffeine, and overeating just to make it all worthwhile. Expect sleep deprivation, code collisions, and the kind of teamwork that only exists when there's a deadline and a 10-minute snack break. It's chaos, it's code, it's a whole vibe—don't miss it!",
   tickets: 42,
-  available: 50,
+  available: 42,
   price: "free",
   date: new Date(2022, 10, 29),
   genre: "Nerd",
@@ -44,30 +44,30 @@ const concert = {
 };
 
 const defaults = {
-    spread: 360,
-    ticks: 50,
-    gravity: 0,
-    decay: 0.94,
-    startVelocity: 30,
-    shapes: ["star"],
-    colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
-  };
-  
+  spread: 360,
+  ticks: 50,
+  gravity: 0,
+  decay: 0.94,
+  startVelocity: 30,
+  shapes: ["star"],
+  colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
+};
+
 function shoot() {
-    confetti({
-      ...defaults,
-      particleCount: 40,
-      scalar: 1.2,
-      shapes: ["star"],
-    });
-  
-    confetti({
-      ...defaults,
-      particleCount: 10,
-      scalar: 0.75,
-      shapes: ["circle"],
-    });
-  }
+  confetti({
+    ...defaults,
+    particleCount: 40,
+    scalar: 1.2,
+    shapes: ["star"],
+  });
+
+  confetti({
+    ...defaults,
+    particleCount: 10,
+    scalar: 0.75,
+    shapes: ["circle"],
+  });
+}
 
 interface EventOverviewProps {
   setBuyTicketsIsOpen: any;
@@ -75,31 +75,43 @@ interface EventOverviewProps {
 
 const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
   const [quantity, setQuantity] = useState(1);
+  const [txHash, setTxHash] = useState<string | null>(null);
   const { address } = useAccount();
   const { contract } = useContract({ abi: ABI, address: CONTRACT_ADDRESS });
   const { data } = useBalance({ address });
 
-  
-  const { send, error, isPending, isSuccess } = useSendTransaction({
-      calls:
+  const {
+    send,
+    error,
+    isPending,
+    isSuccess,
+    data: txData,
+  } = useSendTransaction({
+    calls:
       address && contract
-      ? [
-          {
+        ? [
+            {
               contractAddress: CONTRACT_ADDRESS,
               entrypoint: "ft_mint",
               calldata: [address],
             },
-        ]
+          ]
         : undefined,
-    });
+  });
 
-    useEffect(() => {
-        if (isSuccess) {
-            setTimeout(shoot, 0);
-            setTimeout(shoot, 100);
-            setTimeout(shoot, 200);
-        }
-    }, [isSuccess])
+  useEffect(() => {
+    if (isSuccess) {
+      // Set the transaction hash
+      if (txData?.transaction_hash) {
+        setTxHash(txData.transaction_hash);
+      }
+
+      // Shoot confetti
+      setTimeout(shoot, 0);
+      setTimeout(shoot, 100);
+      setTimeout(shoot, 200);
+    }
+  }, [isSuccess, txData]);
 
   const readableBalance = (
     bData:
@@ -126,99 +138,213 @@ const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
     send();
   };
 
+  // Function to open transaction in explorer
+  const openTransactionInExplorer = () => {
+    if (txHash) {
+      window.open(`https://sepolia.voyager.online/tx/${txHash}`, "_blank");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
       <NavBar />
-      <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-        <Card className="overflow-hidden relative">
-          <div className="absolute top-4 right-4 z-10">
+      <main className="max-w-3xl mx-auto py-4 px-4">
+        <Card className="overflow-hidden relative bg-white/90 backdrop-blur-sm shadow-lg rounded-lg border border-white/20">
+          <div className="absolute top-3 right-3 z-10">
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full bg-white hover:bg-gray-100 transition-all"
+              className="rounded-full bg-white/80 hover:bg-white/95 transition-all duration-200 shadow-sm"
               onClick={() => setBuyTicketsIsOpen(false)}
             >
-              <X className="h-6 w-6" />
+              <X className="h-4 w-4 text-purple-600" />
             </Button>
           </div>
-          <img
-            src="https://ipfs.io/ipfs/QmfFLkQEqbYNSqn7wQN9Kd2XJuJJe4ZHEhaG6jADQDRjfr/starknet42berlin.png"
-            width={800}
-            height={400}
-            className="w-full h-64 object-cover"
-          />
-          <CardHeader>
-            <CardTitle className="text-3xl">{concert.name}</CardTitle>
+
+          <div className="relative">
+            <img
+              src="https://ipfs.io/ipfs/QmfFLkQEqbYNSqn7wQN9Kd2XJuJJe4ZHEhaG6jADQDRjfr/starknet42berlin.png"
+              className="w-full h-56 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          </div>
+
+          <CardHeader className="relative z-10 -mt-16 pb-0">
+            <CardTitle className="text-2xl font-bold text-white drop-shadow-lg">
+              {concert.name}
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-lg mb-6">{concert.description}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <p className="font-semibold">Date:</p>
-                <p>{format(concert.date, "MMMM d, yyyy")}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Venue:</p>
-                <p>{concert.venue}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Genre:</p>
-                <p>{concert.genre}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Available Tickets:</p>
-                <p>{concert.available}</p>
-              </div>
-              <div>
-                <p className="font-semibold">Price per Ticket:</p>
-                <p>{concert.price}</p>
-              </div>
+
+          <CardContent className="space-y-4 p-4">
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {concert.description}
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Date", value: format(concert.date, "MMMM d, yyyy") },
+                { label: "Venue", value: concert.venue },
+                { label: "Genre", value: concert.genre },
+                { label: "Available", value: concert.available },
+                { label: "Price", value: concert.price },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="bg-purple-50 p-2 rounded-lg shadow-sm"
+                >
+                  <p className="font-semibold text-purple-600 text-xs mb-0.5">
+                    {item.label}
+                  </p>
+                  <p className="text-gray-700 text-sm">{item.value}</p>
+                </div>
+              ))}
             </div>
-            <div className="mb-6">
-              <h3 className="font-semibold text-xl mb-2">Lineup:</h3>
-              <ul className="list-disc list-inside">
-                {concert.lineup.map((artist, index) => (
-                  <li key={index}>{artist}</li>
-                ))}
-              </ul>
+
+            <div className="bg-pink-50 rounded-lg p-3">
+              <h3 className="font-semibold text-sm text-pink-600 mb-2">
+                Lineup
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                <a
+                  href="https://x.com/tx_track"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/80 backdrop-blur-sm px-2 py-1.5 rounded-lg shadow-sm text-center text-gray-700 hover:bg-white/95 hover:text-purple-600 transition-all duration-200 text-sm"
+                >
+                  Lana
+                </a>
+                <a
+                  href="https://x.com/0xChqrles"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/80 backdrop-blur-sm px-2 py-1.5 rounded-lg shadow-sm text-center text-gray-700 hover:bg-white/95 hover:text-purple-600 transition-all duration-200 text-sm"
+                >
+                  Chqrles
+                </a>
+                <a
+                  href="https://x.com/monsieur_kus"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/80 backdrop-blur-sm px-2 py-1.5 rounded-lg shadow-sm text-center text-gray-700 hover:bg-white/95 hover:text-purple-600 transition-all duration-200 text-sm"
+                >
+                  Michael
+                </a>
+                <a
+                  href="https://x.com/tdelabro"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/80 backdrop-blur-sm px-2 py-1.5 rounded-lg shadow-sm text-center text-gray-700 hover:bg-white/95 hover:text-purple-600 transition-all duration-200 text-sm"
+                >
+                  Timothée
+                </a>
+                <a
+                  href="https://x.com/robertkp13?lang=en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/80 backdrop-blur-sm px-2 py-1.5 rounded-lg shadow-sm text-center text-gray-700 hover:bg-white/95 hover:text-purple-600 transition-all duration-200 text-sm"
+                >
+                  Robert
+                </a>
+              </div>
             </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="w-full">Buy Tickets</Button>
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-lg shadow-md transition duration-200 text-sm">
+                  Buy Tickets
+                </Button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Purchase Tickets for {concert.name}</DialogTitle>
+              <DialogContent className="bg-white/95 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-xl max-w-sm mx-auto">
+                <DialogHeader className="flex flex-col items-center justify-center mb-2">
+                  <DialogTitle className="text-xl font-bold text-purple-600 flex items-center gap-2">
+                    {isSuccess && txHash ? (
+                      <>🎉 Great Success! 🎉</>
+                    ) : (
+                      <>
+                        <span className="inline-block w-2 h-2 bg-purple-600 rounded-full animate-pulse"></span>
+                        Purchase Details
+                      </>
+                    )}
+                  </DialogTitle>
                 </DialogHeader>
-                <div className="mt-4">
-                  <Label htmlFor="quantity">Quantity</Label>
-                  <Input
-                    id="quantity"
-                    type="number"
-                    min="1"
-                    max={concert.available}
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value))}
-                    className="mt-1"
-                  />
-                  <p className="mt-2">
-                    Current Balance {readableBalance(data)}
-                  </p>
-                  <p className="mt-2">
-                    Total Price: {(quantity * concert.price).toFixed(2)} ETH
-                  </p>
-                  <Button onClick={handleMint} disabled={isPending || !address}>
-                    {isPending ? "Minting..." : "Mint NFT"}
-                  </Button>
-                  {isSuccess && (
-                    <div className="mt-4">
-                      <p className="text-green-500">
-                        Tickets purchased successfully!
-                      </p>
+
+                <div className="space-y-3">
+                  {isSuccess && txHash ? (
+                    <div className="space-y-3">
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <p className="text-green-600 font-semibold text-center text-sm">
+                          Transaction completed!
+                        </p>
+                      </div>
+                      <Button
+                        onClick={openTransactionInExplorer}
+                        className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg shadow-md transition duration-200 text-sm"
+                      >
+                        View Transaction
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="bg-purple-50/50 rounded-lg divide-y divide-purple-100">
+                        <div className="p-2">
+                          <div className="text-xs text-purple-600 font-medium">
+                            Balance
+                          </div>
+                          <div className="text-sm font-semibold">
+                            {readableBalance(data)}
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <div className="text-xs text-purple-600 font-medium">
+                            Network
+                          </div>
+                          <div className="text-sm font-semibold">
+                            Starknet Testnet
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={handleMint}
+                        disabled={isPending || !address}
+                        className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-medium py-2 rounded-lg shadow-md transition duration-200 text-sm"
+                      >
+                        {isPending ? (
+                          <span className="flex items-center justify-center gap-1.5">
+                            <svg
+                              className="animate-spin h-3 w-3 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Processing...
+                          </span>
+                        ) : (
+                          "Mint NFT"
+                        )}
+                      </Button>
                     </div>
                   )}
+
                   {error && (
-                    <p className="text-red-500 mt-4">{error.message}</p>
+                    <div className="bg-red-50 p-2 rounded-lg">
+                      <p className="text-red-500 text-xs text-center font-medium">
+                        {error.message}
+                      </p>
+                    </div>
                   )}
                 </div>
               </DialogContent>

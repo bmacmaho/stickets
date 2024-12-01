@@ -1,6 +1,5 @@
 import Link from 'next/link'
-// import { Button } from '@/components/ui/button'
-import { Music } from 'lucide-react'
+import { Music, Wallet } from 'lucide-react'
 import { useAccount, useDisconnect } from '@starknet-react/core';
 import ConnectModal from './starknet/ConnectModal';
 
@@ -29,27 +28,30 @@ export default function NavBar() {
               </Link>
             </div>
           </div>
-          {address ? (
-            <div className="flex flex-col items-end bg-zinc-100 rounded-md px-6 py-2">
-            <p className="font-semibold">{`${address.slice(
-                0,
-                6,
-            )}...${address.slice(-4)}`}</p>
-            <p
-                onClick={() => disconnect()}
-                className="cursor-pointer text-black/50"
-            >
-                Disconnect
-            </p>
-            </div>
-        ) : (<div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <ConnectModal />
-            {/* <Button variant="secondary">Connect Wallet</Button> */}
+          <div className="flex items-center">
+            {address ? (
+              <div className="bg-white/90 backdrop-blur-sm px-6 py-2 rounded-xl flex items-center gap-2 hover:bg-white/95 transition-all duration-200 shadow-sm">
+                <Wallet className="h-5 w-5 text-purple-600" />
+                <div className="flex flex-col">
+                  <p className="font-medium text-purple-600">
+                    {`${address.slice(0, 6)}...${address.slice(-4)}`}
+                  </p>
+                  <button
+                    onClick={() => disconnect()}
+                    className="text-xs text-pink-500 hover:text-pink-600 text-left transition-colors"
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="hidden sm:flex sm:items-center">
+                <ConnectModal />
+              </div>
+            )}
           </div>
-        )}
         </div>
       </div>
     </nav>
   )
 }
-

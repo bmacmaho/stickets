@@ -9,7 +9,10 @@ export default function ConnectModal() {
 
   return (
     <Dialog title="Connect Wallet">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4 p-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg shadow-lg max-w-md mx-auto">
+        <p className="text-center text-xl text-white font-semibold mb-4">
+          Choose your wallet to connect
+        </p>
         {connectors.map((connector: Connector) => {
           return (
             <Button
@@ -18,12 +21,15 @@ export default function ConnectModal() {
                 connector.available() ? connect({ connector }) : null
               }
               disabled={!connector.available()}
-              className="flex flex-row items-center justify-start gap-4 w-96"
+              className="flex flex-row items-center justify-start gap-4 w-full px-5 py-3 rounded-md text-white transition-transform transform hover:scale-105 active:scale-95 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 shadow-md"
             >
               {connector.icon.light && (
-                <img src={connector.icon.dark} className="w-10 h-10" />
+                <img
+                  src={connector.icon.dark}
+                  className="w-8 h-8 rounded-full border-2 border-white"
+                />
               )}
-              <p className="">Connect {connector.name}</p>
+              <p className="font-medium">Connect with {connector.name}</p>
             </Button>
           );
         })}

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,7 @@ import {
   useSendTransaction,
 } from "@starknet-react/core";
 import jsonData from "../../abi.json";
+import confetti from "canvas-confetti";
 import { Abi } from "starknet";
 
 const CONTRACT_ADDRESS =
@@ -42,28 +43,63 @@ const concert = {
   lineup: ["Lana", "Michael", "Timothée", "Chqrles", "Robert"],
 };
 
+const defaults = {
+    spread: 360,
+    ticks: 50,
+    gravity: 0,
+    decay: 0.94,
+    startVelocity: 30,
+    shapes: ["star"],
+    colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
+  };
+  
+function shoot() {
+    confetti({
+      ...defaults,
+      particleCount: 40,
+      scalar: 1.2,
+      shapes: ["star"],
+    });
+  
+    confetti({
+      ...defaults,
+      particleCount: 10,
+      scalar: 0.75,
+      shapes: ["circle"],
+    });
+  }
+
 interface EventOverviewProps {
   setBuyTicketsIsOpen: any;
 }
 
 const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
   const [quantity, setQuantity] = useState(1);
-  const { address, status } = useAccount();
+  const { address } = useAccount();
   const { contract } = useContract({ abi: ABI, address: CONTRACT_ADDRESS });
   const { data } = useBalance({ address });
 
-  const { send, error, isLoading, isSuccess } = useSendTransaction({
-    calls:
+  
+  const { send, error, isPending, isSuccess } = useSendTransaction({
+      calls:
       address && contract
-        ? [
-            {
+      ? [
+          {
               contractAddress: CONTRACT_ADDRESS,
               entrypoint: "ft_mint",
               calldata: [address],
             },
-          ]
+        ]
         : undefined,
-  });
+    });
+
+    useEffect(() => {
+        if (isSuccess) {
+            setTimeout(shoot, 0);
+            setTimeout(shoot, 100);
+            setTimeout(shoot, 200);
+        }
+    }, [isSuccess])
 
   const readableBalance = (
     bData:
@@ -171,8 +207,8 @@ const EventOverview: FC<EventOverviewProps> = ({ setBuyTicketsIsOpen }) => {
                   <p className="mt-2">
                     Total Price: {(quantity * concert.price).toFixed(2)} ETH
                   </p>
-                  <Button onClick={handleMint} disabled={isLoading || !address}>
-                    {isLoading ? "Minting..." : "Mint NFT"}
+                  <Button onClick={handleMint} disabled={isPending || !address}>
+                    {isPending ? "Minting..." : "Mint NFT"}
                   </Button>
                   {isSuccess && (
                     <div className="mt-4">

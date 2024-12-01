@@ -1,11 +1,17 @@
-
 #[starknet::interface]
 pub trait Ift_NFT<TContractState> {
     fn ft_mint(
         ref self: TContractState,
         recipient: starknet::ContractAddress,
-    );
+    ) -> u256;
+    fn get_available(self: @TContractState) -> u256;
+    fn transfer_nft(
+        ref self: TContractState,
+        to: starknet::ContractAddress, 
+        token_id: u256);
+    fn token_owner(self: @TContractState, token_id: u256) -> starknet::ContractAddress;
 }
+
 #[starknet::contract]
 pub mod ft_NFT {
     use starknet::ContractAddress;
@@ -47,9 +53,9 @@ pub mod ft_NFT {
         base_uri: ByteArray,
         max_supply: u256
     ) {
-//        let name: ByteArray = "ft_NFT";
-//        let symbol: ByteArray = "FTFT";
-//        let base_uri: ByteArray = "https://ipfs.io/ipfs/QmV8LY3u8jMDC71DnEbMSB7hjc2K5BLrYfofwRwt6pcutD/";
+        assert(name.len() > 0, 'BAD NAME');
+        assert(symbol.len() > 0, 'BAD SYMBL');
+        assert(max_supply > 0, 'NO SUPPLY');
         self.max_supply.write(max_supply);
         self.minted_count.write(0_u256);
         self.erc721.initializer(name, symbol, base_uri);
@@ -57,11 +63,34 @@ pub mod ft_NFT {
 
     #[abi(embed_v0)]
     impl ft_NFTImpl of super::Ift_NFT<ContractState> {
-      fn ft_mint(ref self: ContractState, recipient: ContractAddress) {
+      fn ft_mint(ref self: ContractState, recipient: ContractAddress) -> u256 {
           assert(self.minted_count.read() < self.max_supply.read(), 'SOLD OUT!');
-          self.minted_count.write(self.minted_count.read() + 1_u256);
+          let token_id = self.minted_count.read() + 1_u256;
+          self.minted_count.write(token_id);
           self.erc721.mint(recipient, self.minted_count.read());
+          token_id
       }
+
+      fn get_available(self: @ContractState) -> u256 {
+          let available: u256 = if self.minted_count.read() > self.max_supply.read() {
+              0_u256
+          } else {
+              self.max_supply.read() - self.minted_count.read()
+          };
+          available
+      }
+
+      fn transfer_nft(ref self: ContractState, to: ContractAddress, token_id: u256) {
+          let sender = starknet::get_caller_address();
+          // TODO: how to verify if it is valid address
+          self.erc721.transfer_from(sender, to, token_id);
+      }
+
+      fn token_owner(self: @ContractState, token_id: u256) -> ContractAddress {
+          assert(token_id > 0 && token_id <= self.minted_count.read(), 'BAD TOKEN ID!');
+          self.erc721.owner_of(token_id)
+      }
+
     }
 }
 

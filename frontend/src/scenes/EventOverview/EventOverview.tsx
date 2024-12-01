@@ -2,7 +2,7 @@
 
 import { FC, useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useReadContract } from "@starknet-react/core";
 

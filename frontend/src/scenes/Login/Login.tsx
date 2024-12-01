@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { IDKitWidget, VerificationLevel } from "@worldcoin/idkit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Globe, Wallet, Music } from "lucide-react";
 import { useAccount, useDisconnect } from "@starknet-react/core";
 import ConnectModal from "../../../src/components/starknet/ConnectModal.tsx";
